@@ -40,7 +40,7 @@ provider "aws" {
 }
 
 module "app_pritunl" {
-  source = "github.com/opsgang/terraform_pritunl?ref=2.0.0"
+  source = "github.com/opsgang/terraform_pritunl?ref=3.0.0"
 
   aws_key_name         = "org-eu-west-2"
   vpc_id               = "${module.vpc.vpc_id}"
@@ -55,9 +55,9 @@ module "app_pritunl" {
     "8.8.8.8/32",
   ]
 
-  tags {
-    "role" = "vpn"
-    "env"  = "prod"
+  tags = {
+    role = "vpn"
+    env  = "prod"
   }
 }
 ```
