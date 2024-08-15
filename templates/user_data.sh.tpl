@@ -20,32 +20,32 @@ echo "root hard nofile 64000" >> /etc/security/limits.conf
 echo "root soft nofile 64000" >> /etc/security/limits.conf
 
 
-sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
-[mongodb-org-4.2]
-name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.2/x86_64/
-gpgcheck=1
-enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
-EOF
-sudo tee /etc/yum.repos.d/pritunl.repo << EOF
-[pritunl]
-name=Pritunl Repository
-baseurl=https://repo.pritunl.com/stable/yum/amazonlinux/2/
-gpgcheck=false
-enabled=1
-EOF
+# sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
+# [mongodb-org-4.2]
+# name=MongoDB Repository
+# baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.2/x86_64/
+# gpgcheck=1
+# enabled=1
+# gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
+# EOF
+# sudo tee /etc/yum.repos.d/pritunl.repo << EOF
+# [pritunl]
+# name=Pritunl Repository
+# baseurl=https://repo.pritunl.com/stable/yum/amazonlinux/2/
+# gpgcheck=false
+# enabled=1
+# EOF
 sudo yum -y update
 sudo yum -y install epel-release
-sudo yum-config-manager --enable ol7_developer_epel
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 7568D9BB55FF9E5287D586017AE645C0CF8E292A
-gpg --armor --export 7568D9BB55FF9E5287D586017AE645C0CF8E292A > key.tmp; sudo rpm --import key.tmp; rm -f key.tmp
+# sudo yum-config-manager --enable ol7_developer_epel
+# gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 7568D9BB55FF9E5287D586017AE645C0CF8E292A
+# gpg --armor --export 7568D9BB55FF9E5287D586017AE645C0CF8E292A > key.tmp; sudo rpm --import key.tmp; rm -f key.tmp
 sudo yum -y install pritunl mongodb-org
 sudo systemctl enable mongod pritunl
 sudo systemctl start mongod pritunl
 
 cd /tmp
-curl https://amazon-ssm-eu-west-1.s3.amazonaws.com/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
+curl -s https://amazon-ssm-eu-west-1.s3.amazonaws.com/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 yum install -y amazon-ssm-agent.rpm
 status amazon-ssm-agent || start amazon-ssm-agent
 

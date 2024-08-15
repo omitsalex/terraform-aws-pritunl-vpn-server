@@ -36,12 +36,13 @@ data "cloudinit_config" "pritunl_userdata" {
         # Install gomplate
         - GOMPLATE_VER="3.11.1"
         - URL="https://github.com/hairyhenderson/gomplate/releases/download/v$GOMPLATE_VER/gomplate_linux-amd64"
-        - wget $URL -O /sbin/gomplate
+        - wget $URL -qO /sbin/gomplate
         - chmod +x /sbin/gomplate
         - /sbin/gomplate --version
 
         # Install Pritunl
         - systemctl enable pritunl
+        - 
 
         # configure pritunl
         - gomplate --config /etc/gomplate/set-mongodb-connection.yaml
