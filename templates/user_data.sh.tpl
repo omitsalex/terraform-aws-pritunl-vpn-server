@@ -1,6 +1,8 @@
 #!/bin/bash -xe
 
-export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/aws/bin:/root/bin
+sudo export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/aws/bin:/root/bin
+
+sudo echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
 
 sudo yum update -y
 
@@ -20,7 +22,6 @@ sudo ./aws/install
 sudo aws --version
 sudo rm -rf awscliv2.zip aws
 sudo yum remove -y aws-cli
-sudo echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
 
 sudo echo "* hard nofile 64000" >> /etc/security/limits.conf
 sudo echo "* soft nofile 64000" >> /etc/security/limits.conf
