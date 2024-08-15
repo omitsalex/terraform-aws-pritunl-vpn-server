@@ -24,68 +24,6 @@ data "cloudinit_config" "pritunl_userdata" {
     )
   }
 
-  part {
-    content_type = "text/cloud-config"
-    content = <<-EOT
-      #cloud-config
-
-      packages:
-        - pritunl
-
-      runcmd:
-        # Install gomplate
-        - GOMPLATE_VER="3.11.1"
-        - URL="https://github.com/hairyhenderson/gomplate/releases/download/v$GOMPLATE_VER/gomplate_linux-amd64"
-        - wget $URL -qO /sbin/gomplate
-        - chmod +x /sbin/gomplate
-        - /sbin/gomplate --version
-
-        # Install Pritunl
-        - systemctl enable pritunl
-        - 
-
-        # configure pritunl
-        - gomplate --config /etc/gomplate/set-mongodb-connection.yaml
-
-        # set name in pritunl console
-        - pritunl set host.name testlab
-
-        # setup for elb/alb
-        - pritunl set app.reverse_proxy true
-        - pritunl set app.redirect_server false
-        - pritunl set app.server_ssl false
-        - pritunl set app.server_port 80
-
-        # show orgs/servers/hosts on one page
-        - pritunl set app.org_page_count 25
-        - pritunl set app.server_page_count 25
-        - pritunl set app.link_page_count 25
-        - pritunl set app.host_page_count 25
-
-      write_files:
-        -
-          path: /etc/gomplate/set-mongodb-connection.yaml
-          content: |
-            chmod: 755
-            outputFiles: [ /sbin/pritunl-set-mongodb-connection ]
-            postExec: [ /sbin/pritunl-set-mongodb-connection ]
-            in: |
-              #!/usr/bin/env bash
-              set -o allexport
-
-      yum_repos:
-        pritunl:
-          baseurl: https://repo.pritunl.com/stable/yum/amazonlinux/2/
-          enabled: true
-          gpgcheck: false
-          name: Pritunl Repository
-        epel:
-          baseurl: https://dl.fedoraproject.org/pub/epel/7/x86_64/
-          enabled: true
-          gpgcheck: false
-          name: EPEL
-    EOT
-  }
 }
 
 data "aws_iam_policy_document" "kms_policy" {

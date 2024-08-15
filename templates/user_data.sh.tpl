@@ -12,7 +12,15 @@ pip3 install -U pip
 #     /var/lib/cloud/instance/scripts/part-001: line 10: /usr/bin/pip: No such file or directory
 # So, I export the PATH in the beggining correctly but still tries to from the old location
 # I couldn't see why in the outputs I'm going to hardcode it for now (01:10am)
-/usr/local/bin/pip install -U awscli
+#/usr/local/bin/pip install -U awscli
+sudo yum install -y unzip curl
+sudo curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+sudo unzip awscliv2.zip
+sudo ./aws/install
+sudo aws --version
+sudo rm -rf awscliv2.zip aws
+sudo yum remove -y aws-cli
+sudo echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
 
 echo "* hard nofile 64000" >> /etc/security/limits.conf
 echo "* soft nofile 64000" >> /etc/security/limits.conf
@@ -36,6 +44,8 @@ echo "root soft nofile 64000" >> /etc/security/limits.conf
 # enabled=1
 # EOF
 sudo yum -y update
+sudo amazon-linux-extras install epel -y
+sudo yum clean all
 sudo yum -y install epel-release
 # sudo yum-config-manager --enable ol7_developer_epel
 # gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 7568D9BB55FF9E5287D586017AE645C0CF8E292A
