@@ -62,3 +62,11 @@ variable "s3_bucket_name" {
   description = "[String] Optional S3 bucket name for backups"
   default     = ""
 }
+
+variable "auto_patching" {
+  default = {}
+  type = object({
+    enable      = optional(bool, true)
+    auto_reboot = optional(bool, false)
+  })
+}

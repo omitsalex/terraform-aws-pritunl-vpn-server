@@ -309,7 +309,7 @@ resource "aws_instance" "pritunl" {
   }
 
   provisioner "local-exec" {
-    when    = "create"
+    when    = create
     command = <<-EOT
       if [ ${var.auto_patching.enable} = true ]; then
         sudo yum-cron install -y
