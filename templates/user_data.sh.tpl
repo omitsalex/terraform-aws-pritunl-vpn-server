@@ -2,10 +2,10 @@
 
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/aws/bin:/root/bin
 
-yum update -y
+sudo yum update -y
 
 # upgrade pip to latest stable
-pip3 install -U pip
+sudo pip3 install -U pip
 # upgrade awscli to latest stable
 # upgrading pip from 9.0.3 to 10.0.1 changes the path from /usr/bin/pip to
 # /usr/local/bin/pip and the line below throws this error
@@ -22,10 +22,10 @@ sudo rm -rf awscliv2.zip aws
 sudo yum remove -y aws-cli
 sudo echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
 
-echo "* hard nofile 64000" >> /etc/security/limits.conf
-echo "* soft nofile 64000" >> /etc/security/limits.conf
-echo "root hard nofile 64000" >> /etc/security/limits.conf
-echo "root soft nofile 64000" >> /etc/security/limits.conf
+sudo echo "* hard nofile 64000" >> /etc/security/limits.conf
+sudo echo "* soft nofile 64000" >> /etc/security/limits.conf
+sudo echo "root hard nofile 64000" >> /etc/security/limits.conf
+sudo echo "root soft nofile 64000" >> /etc/security/limits.conf
 
 
 # sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
@@ -55,11 +55,11 @@ sudo systemctl enable mongod pritunl
 sudo systemctl start mongod pritunl
 
 cd /tmp
-curl -s https://amazon-ssm-eu-west-1.s3.amazonaws.com/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
-yum install -y amazon-ssm-agent.rpm
-status amazon-ssm-agent || start amazon-ssm-agent
+sudo curl -s https://amazon-ssm-eu-west-1.s3.amazonaws.com/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
+sudo yum install -y amazon-ssm-agent.rpm
+sudo status amazon-ssm-agent || start amazon-ssm-agent
 
-cat <<EOF > /usr/sbin/mongobackup.sh
+sudo cat <<EOF > /usr/sbin/mongobackup.sh
 #!/bin/bash -e
 
 set -o errexit  # exit on cmd failure
@@ -79,9 +79,9 @@ md5sum "\$BACKUP_FILENAME" > "\$BACKUP_FILENAME.md5"
 aws s3 sync . s3://${s3_backup_bucket}/backups/
 cd && rm -rf "\$BACKUP_DEST"
 EOF
-chmod 700 /usr/sbin/mongobackup.sh
+sudo chmod 700 /usr/sbin/mongobackup.sh
 
-cat <<EOF > /etc/cron.daily/pritunl-backup
+sudo cat <<EOF > /etc/cron.daily/pritunl-backup
 #!/bin/bash -e
 export PATH="/usr/local/sbin:/usr/local/bin:\$PATH"
 mongobackup.sh && \
@@ -106,7 +106,7 @@ cat <<EOF > /etc/logrotate.d/pritunl
 }
 EOF
 
-cat <<EOF > /home/ec2-user/.bashrc
+sudo cat <<EOF > /home/ec2-user/.bashrc
 # https://twitter.com/leventyalcin/status/852139188317278209
 if [ -f /etc/bashrc ]; then
   . /etc/bashrc
