@@ -4,10 +4,12 @@ sudo export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/o
 
 sudo echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
 
+echo $PATH
+
 sudo yum update -y
 
 # upgrade pip to latest stable
-sudo pip3 install -U pip
+#sudo pip3 install -U pip
 # upgrade awscli to latest stable
 # upgrading pip from 9.0.3 to 10.0.1 changes the path from /usr/bin/pip to
 # /usr/local/bin/pip and the line below throws this error
