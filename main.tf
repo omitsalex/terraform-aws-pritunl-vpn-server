@@ -7,19 +7,83 @@ locals {
 }
 
 # Generate the cloud-init user data
-data "cloudinit_config" "user_data" {
+
+# Cloud-init configuration for Pritunl provisioning
+data "cloudinit_config" "pritunl_userdata" {
   gzip          = false
   base64_encode = false
 
   part {
-    content_type = "text/x-shellscript"
-    content      = templatefile("${path.module}/templates/user_data.sh.tpl",
+    content_type = "text/cloud-config"
+    content = templatefile("${path.module}/templates/user_data.sh.tpl",
       {
         aws_region          = data.aws_region.current.name
         s3_backup_bucket    = local.backup_bucket_name
         healthchecks_io_key = "/pritunl/${var.resource_name_prefix}/healthchecks-io-key"
       }
     )
+  }
+
+  part {
+    content_type = "text/cloud-config"
+    content = <<-EOT
+      #cloud-config
+
+      packages:
+        - pritunl
+
+      runcmd:
+        # Install gomplate
+        - GOMPLATE_VER="3.11.1"
+        - URL="https://github.com/hairyhenderson/gomplate/releases/download/v$GOMPLATE_VER/gomplate_linux-amd64"
+        - wget $URL -O /sbin/gomplate
+        - chmod +x /sbin/gomplate
+        - /sbin/gomplate --version
+
+        # Install Pritunl
+        - systemctl enable pritunl
+
+        # configure pritunl
+        - gomplate --config /etc/gomplate/set-mongodb-connection.yaml
+
+        # set name in pritunl console
+        - pritunl set host.name testlab
+
+        # setup for elb/alb
+        - pritunl set app.reverse_proxy true
+        - pritunl set app.redirect_server false
+        - pritunl set app.server_ssl false
+        - pritunl set app.server_port 80
+
+        # show orgs/servers/hosts on one page
+        - pritunl set app.org_page_count 25
+        - pritunl set app.server_page_count 25
+        - pritunl set app.link_page_count 25
+        - pritunl set app.host_page_count 25
+
+      write_files:
+        -
+          path: /etc/gomplate/set-mongodb-connection.yaml
+          content: |
+            chmod: 755
+            outputFiles: [ /sbin/pritunl-set-mongodb-connection ]
+            postExec: [ /sbin/pritunl-set-mongodb-connection ]
+            in: |
+              #!/usr/bin/env bash
+              set -o allexport
+
+      yum_repos:
+        pritunl:
+          baseurl: https://repo.pritunl.com/stable/yum/amazonlinux/2/
+          enabled: true
+          gpgcheck: false
+          name: Pritunl Repository
+        epel:
+          baseurl: https://dl.fedoraproject.org/pub/epel/7/x86_64/
+          enabled: true
+          gpgcheck: false
+          name: EPEL
+    EOT
   }
 }
 
@@ -218,12 +282,13 @@ resource "aws_security_group" "allow_from_office" {
   )
 }
 
+# EC2 instance for Pritunl
 resource "aws_instance" "pritunl" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = var.aws_key_name
   ebs_optimized = var.ebs_optimized
-  user_data     = data.cloudinit_config.user_data.rendered
+  user_data     = data.cloudinit_config.pritunl_userdata.rendered
 
   vpc_security_group_ids = [
     aws_security_group.pritunl.id,
@@ -237,6 +302,26 @@ resource "aws_instance" "pritunl" {
     tomap({"Name" = format("%s-%s", var.resource_name_prefix, "vpn")}),
     var.tags,
   )
+
+  # Add patching options if enabled
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  provisioner "local-exec" {
+    when    = "create"
+    command = <<-EOT
+      if [ ${var.auto_patching.enable} = true ]; then
+        sudo yum-cron install -y
+        sudo systemctl enable --now yum-cron
+        sudo sed -i 's/^apply_updates = no/apply_updates = yes/' /etc/yum/yum-cron.conf
+        if [ ${var.auto_patching.auto_reboot} = true ]; then
+          sudo sed -i 's/^update_cmd = default/update_cmd = security/' /etc/yum/yum-cron.conf
+          sudo sed -i 's/^apply_updates = no/apply_updates = yes/' /etc/yum/yum-cron.conf
+        fi
+      fi
+    EOT
+  }
 }
 
 resource "aws_eip" "pritunl" {

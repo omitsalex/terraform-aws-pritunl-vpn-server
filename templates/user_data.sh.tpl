@@ -31,8 +31,8 @@ EOF
 sudo tee /etc/yum.repos.d/pritunl.repo << EOF
 [pritunl]
 name=Pritunl Repository
-baseurl=https://repo.pritunl.com/stable/yum/oraclelinux/7/
-gpgcheck=1
+baseurl=https://repo.pritunl.com/stable/yum/amazonlinux/2/
+gpgcheck=false
 enabled=1
 EOF
 sudo yum -y update
