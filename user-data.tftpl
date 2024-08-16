@@ -1,64 +1,14 @@
 #cloud-config
 
-packages:
-  - awscli
-  - vim
-  - wget
-  - curl
-  - pritunl
-
-power_state:
-  mode: reboot
-  condition: true
-
-repo_update: true
-repo_upgrade: all
-package_upgrade: true
-
 runcmd:
-  # Install gomplate
-  - yum -y install pritunl mongodb-org
-  - GOMPLATE_VER="3.11.1"
-  - URL="https://github.com/hairyhenderson/gomplate/releases/download/v$GOMPLATE_VER/gomplate_linux-amd64"
-  - wget $URL -O /sbin/gomplate
-  - chmod +x /sbin/gomplate
-  - /sbin/gomplate --version
-  # Install Pritunl
-  - systemctl enable pritunl
-  # configure pritunl
-  - gomplate --config /etc/gomplate/set-mongodb-connection.yaml
-  # set name in pritunl console
-  - pritunl set host.name testlab-pritunl
-  # setup for elb/alb
-  - pritunl set app.reverse_proxy true
-  - pritunl set app.redirect_server false
-  - pritunl set app.server_ssl false
-  - pritunl set app.server_port 80
-  # show orgs/servers/hosts on one page
-  - pritunl set app.org_page_count 25
-  - pritunl set app.server_page_count 25
-  - pritunl set app.link_page_count 25
-  - pritunl set app.host_page_count 25
-
-write_files:
-  - path: /etc/gomplate/set-mongodb-connection.yaml
-    content: |
-      chmod: 755
-      outputFiles: [ /sbin/pritunl-set-mongodb-connection ]
-      postExec: [ /sbin/pritunl-set-mongodb-connection ]
-      in: |
-        #!/usr/bin/env bash
-        set -o allexport
-        
-  yum_repos:
-    pritunl:
-      baseurl: https://repo.pritunl.com/stable/yum/amazonlinux/2023/
-      enabled: true
-      gpgcheck: false
-      name: Pritunl Repository
-
-    mongodb:
-      baseurl: https://repo.mongodb.org/yum/amazon/2/mongodb-org/4.2/x86_64/
-      enabled: true
-      gpgcheck: false
-      name: MongoDB Repository
+  - echo 'deb http://repo.pritunl.com/stable/apt jammy main' > /etc/apt/sources.list.d/pritunl.list
+  - echo 'deb https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse' > /etc/apt/sources.list.d/mongodb-org-6.0.list
+  - apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
+  - wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+  - apt update
+  - apt --assume-yes upgrade
+  - apt -y install wireguard wireguard-tools
+  - ufw disable
+  - apt -y install pritunl mongodb-org
+  - systemctl enable mongod pritunl
+  - systemctl start mongod pritunl

@@ -17,14 +17,14 @@ sudo echo "root hard nofile 64000" >> /etc/security/limits.conf
 sudo echo "root soft nofile 64000" >> /etc/security/limits.conf
 
 
-# sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
-# [mongodb-org-4.2]
-# name=MongoDB Repository
-# baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.2/x86_64/
-# gpgcheck=1
-# enabled=1
-# gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
-# EOF
+sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
+[mongodb-org-4.2]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.2/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
+EOF
 # sudo tee /etc/yum.repos.d/pritunl.repo << EOF
 # [pritunl]
 # name=Pritunl Repository
