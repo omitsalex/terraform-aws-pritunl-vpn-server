@@ -10,12 +10,12 @@ locals {
 
 # Cloud-init configuration for Pritunl provisioning
 data "cloudinit_config" "pritunl_userdata" {
-  gzip          = false
-  base64_encode = false
+  gzip          = true
+  base64_encode = true
 
   part {
     content_type = "text/cloud-config"
-    content = templatefile("${path.module}/templates/user_data.sh.tpl",
+    content = templatefile("${path.module}/templates/user_data.tftpl",
       {
         aws_region          = data.aws_region.current.name
         s3_backup_bucket    = local.backup_bucket_name
@@ -223,11 +223,11 @@ resource "aws_security_group" "allow_from_office" {
 
 # EC2 instance for Pritunl
 resource "aws_instance" "pritunl" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  key_name      = var.aws_key_name
-  ebs_optimized = var.ebs_optimized
-  user_data     = data.cloudinit_config.pritunl_userdata.rendered
+  ami               = var.ami_id
+  instance_type     = var.instance_type
+  key_name          = var.aws_key_name
+  ebs_optimized     = var.ebs_optimized
+  user_data_base64  = data.cloudinit_config.pritunl_userdata.rendered
 
   vpc_security_group_ids = [
     aws_security_group.pritunl.id,
