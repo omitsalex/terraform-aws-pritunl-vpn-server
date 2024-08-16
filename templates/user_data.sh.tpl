@@ -1,23 +1,8 @@
-#!/bin/bash -xe
-
+#!/bin/bash
 echo "---   STARTING PRITUNL PROVISIONING   ---"
 sudo export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/aws/bin:/root/bin
-
 sudo echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
-
-echo $PATH
-
 sudo yum update -y
-
-# upgrade pip to latest stable
-#sudo pip3 install -U pip
-# upgrade awscli to latest stable
-# upgrading pip from 9.0.3 to 10.0.1 changes the path from /usr/bin/pip to
-# /usr/local/bin/pip and the line below throws this error
-#     /var/lib/cloud/instance/scripts/part-001: line 10: /usr/bin/pip: No such file or directory
-# So, I export the PATH in the beggining correctly but still tries to from the old location
-# I couldn't see why in the outputs I'm going to hardcode it for now (01:10am)
-#/usr/local/bin/pip install -U awscli
 sudo yum install -y unzip curl
 sudo curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 sudo unzip awscliv2.zip
