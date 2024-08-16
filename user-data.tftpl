@@ -1,7 +1,19 @@
 #cloud-config
 
 packages:
+  - awscli
+  - vim
+  - wget
+  - curl
   - pritunl
+
+power_state:
+  mode: reboot
+  condition: true
+
+repo_update: true
+repo_upgrade: all
+package_upgrade: true
 
 runcmd:
   # Install gomplate
