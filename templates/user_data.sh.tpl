@@ -1,5 +1,6 @@
 #!/bin/bash -xe
 
+echo "---   STARTING PRITUNL PROVISIONING   ---"
 sudo export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/aws/bin:/root/bin
 
 sudo echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
