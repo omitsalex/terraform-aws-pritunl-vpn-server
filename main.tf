@@ -247,20 +247,7 @@ resource "aws_instance" "pritunl" {
     create_before_destroy = true
   }
 
-  provisioner "local-exec" {
-    when    = create
-    command = <<-EOT
-      if [ ${var.auto_patching.enable} = true ]; then
-        sudo yum-cron install -y
-        sudo systemctl enable --now yum-cron
-        sudo sed -i 's/^apply_updates = no/apply_updates = yes/' /etc/yum/yum-cron.conf
-        if [ ${var.auto_patching.auto_reboot} = true ]; then
-          sudo sed -i 's/^update_cmd = default/update_cmd = security/' /etc/yum/yum-cron.conf
-          sudo sed -i 's/^apply_updates = no/apply_updates = yes/' /etc/yum/yum-cron.conf
-        fi
-      fi
-    EOT
-  }
+  
 }
 
 resource "aws_eip" "pritunl" {
