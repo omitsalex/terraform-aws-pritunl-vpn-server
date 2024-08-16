@@ -17,7 +17,7 @@ package_upgrade: true
 
 runcmd:
   # Install gomplate
-  - 
+  - yum update -y
   - yum -y install pritunl mongodb-org
   - GOMPLATE_VER="3.11.1"
   - URL="https://github.com/hairyhenderson/gomplate/releases/download/v$GOMPLATE_VER/gomplate_linux-amd64"
