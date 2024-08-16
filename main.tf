@@ -15,7 +15,7 @@ data "cloudinit_config" "pritunl_userdata" {
 
   part {
     content_type = "text/cloud-config"
-    content = templatefile("${path.module}/user_data.tftpl",
+    content = templatefile("${path.module}/user-data.tftpl",
       {
         aws_region          = data.aws_region.current.name
         s3_backup_bucket    = local.backup_bucket_name
