@@ -240,7 +240,7 @@ resource "aws_instance" "pritunl" {
   root_block_device {
     volume_type           = var.volume_type
     volume_size           = var.volume_size
-    kms_key_id.           = var.kms_key_id
+    kms_key_id            = var.kms_key_id
     encrypted             = true
     delete_on_termination = false  # Ensure the root volume is not deleted
   }
