@@ -237,6 +237,14 @@ resource "aws_instance" "pritunl" {
   subnet_id            = var.public_subnet_id
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
 
+  root_block_device {
+    volume_type           = var.volume_type
+    volume_size           = var.volume_size
+    aws_kms_key           = var.kms_key_id
+    encrypted             = true
+    delete_on_termination = false  # Ensure the root volume is not deleted
+  }
+
   tags = merge(
     tomap({"Name" = format("%s-%s", var.resource_name_prefix, "vpn")}),
     var.tags,

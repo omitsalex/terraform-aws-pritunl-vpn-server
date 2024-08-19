@@ -70,3 +70,18 @@ variable "auto_patching" {
     auto_reboot = optional(bool, false)
   })
 }
+
+variable "kms_key_id" {
+  default = ""
+  description = "KMS key for volume encryption"
+}
+
+variable "volume_size" {
+  default = 50
+  description = "Volume size in GB"
+}
+
+variable "volume_type" {
+  default = "gp3"
+  description = "Volume type"
+}
