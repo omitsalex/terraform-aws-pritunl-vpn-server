@@ -253,7 +253,12 @@ resource "aws_instance" "pritunl" {
   # Add patching options if enabled
   lifecycle {
     create_before_destroy = false
-    ignore_changes        = [ami, instance_type]  # List of attributes to ignore changes for
+    ignore_changes        = [
+        ami, 
+        instance_type,
+        root_block_device[0].kms_key_id,  # Ignore changes to kms_key_id
+        root_block_device[0].tags         # Ignore changes to tags (if applicable)
+      ]                                   # List of attributes to ignore changes for
   }
 
 
