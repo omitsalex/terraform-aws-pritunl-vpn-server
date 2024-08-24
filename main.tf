@@ -252,8 +252,10 @@ resource "aws_instance" "pritunl" {
 
   # Add patching options if enabled
   lifecycle {
-    create_before_destroy = true
+    create_before_destroy = false
+    ignore_changes        = [ami, instance_type]  # List of attributes to ignore changes for
   }
+
 
   
 }
