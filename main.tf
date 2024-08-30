@@ -122,6 +122,12 @@ resource "aws_iam_role_policy_attachment" "cloud_watch_agent_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
+ Attach the Inspector policy
+resource "aws_iam_role_policy_attachment" "inspector_role_policy" {
+  role       = aws_iam_role.role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonInspector2ReadOnlyAccess"
+}
+
 resource "aws_iam_role_policy" "policy" {
   name   = "${var.resource_name_prefix}-instance-policy"
   role   = aws_iam_role.role.id
